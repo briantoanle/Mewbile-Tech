@@ -14,6 +14,7 @@ Copyright (c) 2022 Bogdan Simion, Diane Horton, Jacqueline Smith
 import datetime
 from math import ceil
 from typing import Optional
+
 from bill import Bill
 from call import Call
 
@@ -98,9 +99,56 @@ class TermContract(Contract):
         self.start = start
         self.end = end
         self.bill = None
+        print("constructor invoked, created a TermContract object")
+
+    def new_month(self, month: int, year: int, bill: Bill) -> None:
+        """ Advance to a new month in the contract, corresponding to <month> and
+                <year>. This may be the first month of the contract.
+                Store the <bill> argument in this contract and set the appropriate rate
+                per minute and fixed cost.
+        """
+        # self.start.month = month
+        # self.start.year = year
+        bill.set_rates('TERM',TERM_MINS_COST)
+        bill.add_fixed_cost(TERM_DEPOSIT+TERM_MONTHLY_FEE)
+        bill.add_free_minutes(TERM_MINS)
+
+    def cancel_contract(self) -> float:
+        self.start = None
+        # if
+
+    #def cancel_contract(self) -> float:
+
+class MTMContract(Contract):
+    def __init__(self, start: datetime.date(2017, 12, 25)) -> None:
+        self.start = start
+        self.bill = None
+
+    def new_month(self, month: int, year: int, bill: Bill) -> None:
+        """ Advance to a new month in the contract, corresponding to <month> and
+                <year>. This may be the first month of the contract.
+                Store the <bill> argument in this contract and set the appropriate rate
+                per minute and fixed cost.
+        """
+        pass
+
+class PrepaidContract(Contract):
+    def __init__(self, start: datetime.date(2017, 12, 25),balance) -> None:
+        self.start = start
+        self.balance = balance
+        self.bill = None
+
+    def new_month(self, month: int, year: int, bill: Bill) -> None:
+        pass
+
+
 
 if __name__ == '__main__':
-    import python_ta
+    testContract = TermContract(datetime.date(2017, 12, 25),datetime.date(2019, 6, 25))
+    testBill = Bill()
+    testContract.new_month(1,2018,testBill)
+
+    '''import python_ta
     python_ta.check_all(config={
         'allowed-import-modules': [
             'python_ta', 'typing', 'datetime', 'bill', 'call', 'math'
@@ -108,3 +156,4 @@ if __name__ == '__main__':
         'disable': ['R0902', 'R0913'],
         'generated-members': 'pygame.*'
     })
+    '''

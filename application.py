@@ -15,7 +15,7 @@ import datetime
 import json
 
 import call
-from contract import Contract
+from contract import Contract, MTMContract, PrepaidContract, TermContract
 from customer import Customer
 from phoneline import PhoneLine
 from visualizer import Visualizer
@@ -62,7 +62,7 @@ def create_customers(log: dict[str, list[dict]]) -> list[Customer]:
             #    and remove any unused imports to pass PyTA.
             # 3) Do not change anything in the code below besides uncommenting it
             # 4) Remove this TODO list when you're done.
-            """
+
             contract = None
             if line['contract'] == 'prepaid':
                 # start with $100 credit on the account
@@ -74,7 +74,7 @@ def create_customers(log: dict[str, list[dict]]) -> list[Customer]:
                                         datetime.date(2019, 6, 25))
             else:
                 print("ERROR: unknown contract type")
-            """
+
 
             line = PhoneLine(line['number'], contract)
             customer.add_phone_line(line)
@@ -176,6 +176,15 @@ if __name__ == '__main__':
     input_dictionary = import_data()
     customers = create_customers(input_dictionary)
     process_event_history(input_dictionary, customers)
+
+    print("\n================= MY TEST =====================")
+    mrToan = find_customer_by_number("293-2025", customers)
+    made_calls, received_call = mrToan.get_history()
+    for an_out_going_call in made_calls:
+        print(an_out_going_call)
+
+    mrToan.print_bill(1, 2018)
+    mrToan.print_bill(4, 2018)
 
     # ----------------------------------------------------------------------
     # NOTE: You do not need to understand any of the implementation below,

@@ -24,7 +24,7 @@ END_CALL_SPRITE = 'data/call-end-2.png'
 
 # ----------------------------------------------------------------------------
 # NOTE: You do not need to understand the implementation of the Drawable class
-# to be able to solve this assignment. However, feel feel free to read it for
+# to be able to solve this assignment. However, feel free to read it for
 # the fun of understanding the visualization system.
 # ----------------------------------------------------------------------------
 

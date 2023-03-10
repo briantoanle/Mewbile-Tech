@@ -108,7 +108,32 @@ class CustomerFilter(Filter):
         Do not mutate any of the function arguments!
         """
         # TODO: Implement this method
-        return data
+        print("CUSTOMER FILTER ------------------------------------------------------------------------------------->")
+        print(filter_string)
+        found = False
+        custId = 0
+        phone_numbers = []
+        for customer in customers:
+            print(customer.get_id())
+            customer_id = customer.get_id()
+            if customer_id == int(filter_string):
+                print('FOUND!, customer is' ,customer)
+                found = True
+                custId = customer_id
+                phone_numbers = customer.get_phone_numbers()
+                break
+        if found == False:
+            print('not found')
+            return data
+        else:
+            call_list = []
+            for eachNumber in phone_numbers:
+                for call in data:
+                    if call.src_number == eachNumber or call.dst_number == eachNumber:
+                        call_list.append(call)
+            #for i in call_list:
+                #print(i)
+            return call_list
 
     def __str__(self) -> str:
         """ Return a description of this filter to be displayed in the UI menu
@@ -140,7 +165,23 @@ class DurationFilter(Filter):
         Do not mutate any of the function arguments!
         """
         # TODO: Implement this method
-        return data
+        call_length = 0
+        call_list = []
+        if len(filter_string) == 4 and (filter_string[0] == 'L' or filter_string[0] == 'G'):
+            call_length = int(filter_string[1:4])
+            if filter_string[0] == 'L':
+                for call in data:
+                    if call.duration < call_length:
+                        call_list.append(call)
+            else:
+                for call in data:
+                    if call.duration > call_length:
+                        call_list.append(call)
+            #for i in call_list:
+                #print(i.duration)
+            return call_list
+        else:
+            return data
 
     def __str__(self) -> str:
         """ Return a description of this filter to be displayed in the UI menu
@@ -180,7 +221,28 @@ class LocationFilter(Filter):
         Do not mutate any of the function arguments!
         """
         # TODO: Implement this method
-        return data
+
+        # string filter_string = "a,b,c,d"
+        #                   "98, a, 12, 11"
+
+        call_list = []
+        coords = filter_string.split(',')
+        print(coords)
+        try:
+            if len(coords) == 4 and (float(coords[0]) >= -79.697878) and (float(coords[1]) >= 43.576959) and (float(coords[2]) <= -79.196382) \
+                    and (float(coords[3]) <= 43.799568):
+                for call in data:
+                    if call.src_loc[0] >= float(coords[0]) and call.src_loc[0] <= float(coords[2]) \
+                        and call.src_loc[1] >=float(coords[1]) and call.src_loc[1] <=float(coords[3]) and \
+                        call.dst_loc[0] >= float(coords[0]) and call.dst_loc[0] <= float(coords[2]) \
+                        and call.dst_loc[1] >=float(coords[1]) and call.dst_loc[1] <=float(coords[3]):
+                        call_list.append(call)
+                return call_list
+            else:
+                return data
+        except ValueError:
+            print("INVALID INPUT")
+            return data
 
     def __str__(self) -> str:
         """ Return a description of this filter to be displayed in the UI menu

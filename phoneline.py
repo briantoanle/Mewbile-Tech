@@ -72,11 +72,12 @@ class PhoneLine:
         """
         # TODO: Implement this method
 
-        if (call.time.month,call.time.year) not in self.bills:
-            self.new_month(call.time.month,call.time.year)
+
+
         self.callhistory.register_outgoing_call(call)
 
-        #pass
+        # self.contract.bill_call(call)
+
 
     def receive_call(self, call: Call) -> None:
         """ Add the <call> to this phone line's callhistory.

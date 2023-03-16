@@ -167,20 +167,24 @@ class DurationFilter(Filter):
         # TODO: Implement this method
         call_length = 0
         call_list = []
-        if len(filter_string) == 4 and (filter_string[0] == 'L' or filter_string[0] == 'G'):
-            call_length = int(filter_string[1:4])
-            if filter_string[0] == 'L':
-                for call in data:
-                    if call.duration < call_length:
-                        call_list.append(call)
+        try:
+            if len(filter_string) <= 4 and (filter_string[0] == 'L' or filter_string[0] == 'G'):
+                call_length = int(filter_string[1:4])
+                if filter_string[0] == 'L':
+                    for call in data:
+                        if call.duration < call_length:
+                            call_list.append(call)
+                else:
+                    for call in data:
+                        if call.duration > call_length:
+                            call_list.append(call)
+                #for i in call_list:
+                    #print(i.duration)
+                return call_list
             else:
-                for call in data:
-                    if call.duration > call_length:
-                        call_list.append(call)
-            #for i in call_list:
-                #print(i.duration)
-            return call_list
-        else:
+                return data
+        except ValueError:
+            print("INVALID INPUT")
             return data
 
     def __str__(self) -> str:

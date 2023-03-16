@@ -70,7 +70,7 @@ def create_customers(log: dict[str, list[dict]]) -> list[Customer]:
             elif line['contract'] == 'mtm':
                 contract = MTMContract(datetime.date(2017, 12, 25))
             elif line['contract'] == 'term':
-                contract = TermContract(datetime.date(2017, 12, 25),
+                contract = TermContract(datetime.date(2018, 2, 25),
                                         datetime.date(2019, 6, 25))
             else:
                 print("ERROR: unknown contract type")
@@ -178,13 +178,14 @@ if __name__ == '__main__':
     process_event_history(input_dictionary, customers)
 
     print("\n================= MY TEST =====================")
-    mrToan = find_customer_by_number("293-2025", customers)
+    mrToan = find_customer_by_number("722-8592", customers)
     made_calls, received_call = mrToan.get_history()
     for an_out_going_call in made_calls:
         print(an_out_going_call)
 
-    mrToan.print_bill(1, 2018)
-    mrToan.print_bill(4, 2018)
+    for i in range(1,13):
+        print(mrToan.print_bill(i,2018))
+
 
     # ----------------------------------------------------------------------
     # NOTE: You do not need to understand any of the implementation below,

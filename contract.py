@@ -15,6 +15,7 @@ import datetime
 from math import ceil
 from typing import Optional
 
+import bill
 from bill import Bill
 from call import Call
 
@@ -93,13 +94,22 @@ class Contract:
 
 # TODO: Implement the MTMContract, TermContract, and PrepaidContract
 class TermContract(Contract):
+
+    start: datetime.date
+    bill: Optional[Bill]
+    end: datetime.date
+    current: datetime.date
+
     def __init__(self, start: datetime.date(2017, 12, 25), end: datetime.date(2019, 6, 25)) -> None:
         """ Create a new Contract with the <start> date, starts as inactive
         """
-        self.start = start
+        Contract.__init__(self, start)
         self.end = end
         self.bill = None
+        self.current = start
         print("constructor invoked, created a TermContract object")
+
+
 
     def new_month(self, month: int, year: int, bill: Bill) -> None:
         """ Advance to a new month in the contract, corresponding to <month> and
@@ -107,17 +117,29 @@ class TermContract(Contract):
                 Store the <bill> argument in this contract and set the appropriate rate
                 per minute and fixed cost.
         """
-        # self.start.month = month
-        # self.start.year = year
-        bill.set_rates('TERM',TERM_MINS_COST)
-        bill.add_fixed_cost(TERM_DEPOSIT+TERM_MONTHLY_FEE)
-        bill.add_free_minutes(TERM_MINS)
+        self.bill = bill
+        if self.start.month == month and self.start.year == year:
+            self.bill.add_fixed_cost(TERM_DEPOSIT)
+
+        self.bill.set_rates('TERM',TERM_MINS_COST)
+        self.bill.add_fixed_cost(TERM_MONTHLY_FEE)
+    def bill_call(self, call: Call) -> None:
+        minute = ceil(call.duration/60)
+
+        if self.bill.free_min >= TERM_MINS:
+            self.bill.add_billed_minutes(minute*TERM_MINS_COST)
+        else:
+            self.bill.add_free_minutes(minute)
 
     def cancel_contract(self) -> float:
         self.start = None
-        # if
+        if self.month < self.end:
+            print('here')
+        else:
+            self.bill.add_fixed_cost(-300)
+        return self.bill.get_cost()
 
-    #def cancel_contract(self) -> float:
+
 
 class MTMContract(Contract):
     def __init__(self, start: datetime.date(2017, 12, 25)) -> None:
@@ -130,16 +152,30 @@ class MTMContract(Contract):
                 Store the <bill> argument in this contract and set the appropriate rate
                 per minute and fixed cost.
         """
-        pass
+        self.bill = bill
+        self.bill.set_rates('MTM', MTM_MINS_COST)
+        self.bill.add_fixed_cost(MTM_MONTHLY_FEE)
+
+    # bill call and cancel contract is same as default method of contract
 
 class PrepaidContract(Contract):
-    def __init__(self, start: datetime.date(2017, 12, 25),balance) -> None:
+    def __init__(self, start: datetime.date(2017, 12, 25),balance:float) -> None:
         self.start = start
-        self.balance = balance
+        self.balance = -balance
         self.bill = None
 
     def new_month(self, month: int, year: int, bill: Bill) -> None:
-        pass
+        self.bill = bill
+        self.bill.set_rates('PREPAID',PREPAID_MINS_COST)
+        self.bill.add_fixed_cost(self.balance)
+        if bill.get_cost() > -10:
+            self.bill.add_fixed_cost(-25)
+
+    def bill_call(self, call: Call) -> None:
+        self.bill.add_billed_minutes(ceil(call.duration/60))
+        cost = ceil(call.duration/60) * PREPAID_MINS_COST
+        self.balance += cost
+
 
 
 
@@ -148,6 +184,9 @@ if __name__ == '__main__':
     testBill = Bill()
     testContract.new_month(1,2018,testBill)
 
+    print(testBill.get_summary())
+    #testContract.
+    print(testBill.get_summary())
     '''import python_ta
     python_ta.check_all(config={
         'allowed-import-modules': [

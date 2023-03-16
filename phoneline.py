@@ -72,9 +72,9 @@ class PhoneLine:
         """
         # TODO: Implement this method
 
-
-
         self.callhistory.register_outgoing_call(call)
+        self.new_month(call.time.month, call.time.year)
+        self.contract.bill_call(call)
 
         # self.contract.bill_call(call)
 
